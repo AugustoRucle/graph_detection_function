@@ -32,35 +32,52 @@ init_position_X = 0
 # Functions
 #########################################################
 
-def circle (canvas, startX = 10, startY = 10, endX = 80, endY = 80, set_outline='#D9D9D9', set_color = '#737373', width = 2):
-    id = canvas.create_oval( startX, startY, endX, endY, 
-                                outline = set_outline, 
-                                fill = set_color, width = width )
-
-    save_circle(id, startX, startY, endX, endY)
-
-    return id
+def circle (canvas, startX = 10, startY = 10, endX = 80, endY = 80, set_outline='#D9D9D9', set_color = '#737373', width = 2, name = ''):
+        id = canvas.create_oval( startX, startY, endX, endY, 
+                                        outline = set_outline, 
+                                        fill = set_color, width = width )
+        save_circle(name, startX, startY, endX, endY)
+        return name
 
 def text (canvas, x, y, text, font = ("bold", 10)):
-    canvas.create_text (x, y, text = text, font = font)
+        canvas.create_text (x, y, text = text, font = font)
 
-def save_circle (id, startX, startY, endX, endY ):
-    dictionary_cicles[id] = { 
-        "startX": startX, 
-        "startY": startY,
-        "endX"  : endX,
-        "endY"  : endY
-    }
+def line(canvas, startX, startY, endX, endY):
+        canvas.create_line(startX, startY, endX, endY)
+
+def save_circle (id, startX, startY, endX, endY):
+        dictionary_cicles[id] = { 
+                "startX": startX, 
+                "startY": startY,
+                "endX"  : endX,
+                "endY"  : endY
+        }
 
 def draw_graph(canvas, functions_total):
         print(functions_total)
+        draw_node_father(canvas, functions_total)
+        draw_conection(canvas, functions_total)
+        draw_node_father(canvas, functions_total)
+
+def draw_conection(canvas, functions_total):
+        for function_name, values in functions_total:
+                for child in values:
+                        line( canvas,
+                              (dictionary_cicles[function_name]['startX'] + dictionary_cicles[function_name]['endX']) / 2,
+                              (dictionary_cicles[function_name]['startY'] + dictionary_cicles[function_name]['endY']) / 2,
+                              (dictionary_cicles[child]['startX'] + dictionary_cicles[child]['endX']) / 2,
+                              (dictionary_cicles[child]['startY'] + dictionary_cicles[child]['endY']) / 2)
+
+
+def draw_node_father(canvas, functions_total):
         later_id = 0
         for key, value in enumerate(functions_total):
                 if(key == 0):
                         id = circle(canvas, startX= init_position + INCREMENT_X, 
                                         startY=init_position + INCREMENT_Y, 
                                         endX=init_position + DIFFERENCE + INCREMENT_X, 
-                                        endY=init_position +DIFFERENCE + INCREMENT_Y)
+                                        endY=init_position +DIFFERENCE + INCREMENT_Y, 
+                                        name=value[0])
 
                         text(canvas, 
                                 (dictionary_cicles[id]['startX'] + dictionary_cicles[id]['endX'] ) / 2, 
@@ -72,7 +89,8 @@ def draw_graph(canvas, functions_total):
                         id = circle(canvas, startX=dictionary_cicles[later_id]['startX'] + INCREMENT_X * MULTI, 
                                         startY=INCREMENT_Y,
                                         endX=dictionary_cicles[later_id]['endX'] + INCREMENT_X * MULTI,
-                                        endY=INCREMENT_Y + DIFFERENCE)
+                                        endY=INCREMENT_Y + DIFFERENCE,
+                                        name=value[0])
 
                         text(canvas,
                                 (dictionary_cicles[id]['startX'] + dictionary_cicles[id]['endX'] ) / 2, 
@@ -83,7 +101,8 @@ def draw_graph(canvas, functions_total):
                         id = circle(canvas, startX=dictionary_cicles[later_id]['startX'] + INCREMENT_X * MULTI, 
                                         startY=init_position + INCREMENT_Y,
                                         endX=dictionary_cicles[later_id]['endX'] + INCREMENT_X * MULTI,
-                                        endY=init_position +DIFFERENCE + INCREMENT_Y)
+                                        endY=init_position +DIFFERENCE + INCREMENT_Y,
+                                        name=value[0])
 
                         text(canvas,
                                 (dictionary_cicles[id]['startX'] + dictionary_cicles[id]['endX'] ) / 2, 
@@ -91,8 +110,6 @@ def draw_graph(canvas, functions_total):
                                 value[0])
                         later_id = id
                       
-
-
 def print_dictionary(dictionary):
     print("Printing dictionary..............\n\n")
     for key, value in enumerate ( dictionary.items() ):
